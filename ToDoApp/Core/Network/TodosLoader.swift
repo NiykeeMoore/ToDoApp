@@ -8,10 +8,10 @@
 import Foundation
 
 protocol TodosLoading {
-    func load(handler: @escaping (Result<TodosResponse, Error>) -> Void)
+    func load(handler: @escaping (Result<[TaskEntity], Error>) -> Void)
 }
 
-private struct TodosLoader: TodosLoading {
+struct TodosLoader: TodosLoading {
     private let networkClient: NetworkRouting
     
     private var dummyTodos: URL {
@@ -21,22 +21,29 @@ private struct TodosLoader: TodosLoading {
         return url
     }
     
-    func load(handler: @escaping (Result<TodosResponse, any Error>) -> Void) {
+    init(networkClient: NetworkRouting) {
+        self.networkClient = networkClient
+    }
+    
+    func load(handler: @escaping (Result<[TaskEntity], any Error>) -> Void) {
         networkClient.fetch(url: dummyTodos) { result in
             switch result {
             case .success(let data):
                 do {
                     let decoded = try JSONDecoder().decode(TodosResponse.self, from: data)
-                    let task = decoded.todos
-                    
-                    DispatchQueue.main.async {
-                        print(task.count)
+                    let tasks = decoded.todos.map { task in
+                        TaskEntity(taskId: task.id,
+                                   title: task.todo,
+                                   description: "YOOOOOOO",
+                                   isCompleted: task.completed,
+                                   userId: task.userId)
                     }
+                    handler(.success(tasks))
                 } catch {
-                    print("Ошибка декода: \(error.localizedDescription)")
+                    handler(.failure(error))
                 }
             case .failure(let error):
-                print(error)
+                handler(.failure(error))
             }
         }
     }

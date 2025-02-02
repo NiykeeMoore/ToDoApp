@@ -8,10 +8,24 @@
 
 import UIKit
 
+protocol TaskListView: AnyObject {
+    func showTasks(tasks: [TaskEntity])
+    func showError(error: Error)
+}
+
 final class TaskListViewController: UIViewController,
                                     UITableViewDataSource, UITableViewDelegate,
-                                    UISearchResultsUpdating {
+                                    UISearchResultsUpdating,
+                                    TaskListView {
     // MARK: - Properties
+    
+    var presenter: TaskListPresenterInput?
+    private var tasks: [TaskEntity] = [] {
+        didSet {
+            taskList.reloadData()
+        }
+    }
+
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
@@ -38,6 +52,8 @@ final class TaskListViewController: UIViewController,
         configureConstraints()
         
         definesPresentationContext = true // обеспечивает представление UISearchController в границах этого VC
+        
+        presenter?.viewDidLoad()
     }
     
     // MARK: - UI Setup
@@ -70,7 +86,7 @@ final class TaskListViewController: UIViewController,
     }
     
     private func configureToolbar() {
-        let toolBar = ToolbarConfigurator.createToolbarView(title: "7 задач",
+        let toolBar = ToolbarConfigurator.createToolbarView(title: "\(tasks.count) задач",
                                                             buttonImage: "square.and.pencil",
                                                             buttonTarget: self,
                                                             buttonAction: #selector(createNoteButtonTapped),
@@ -105,7 +121,7 @@ final class TaskListViewController: UIViewController,
     
     // MARK: - UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 32
+        return tasks.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -113,15 +129,30 @@ final class TaskListViewController: UIViewController,
                                                        for: indexPath) as? TaskListViewCell else {
             return UITableViewCell()
         }
-        
-        cell.renderCell(title: "TEST CASE OF TITLE", description: "Make some test for description label if its goona be okay make it deep. However this text is a random fill for cell like a test", date: Date(), done: Bool.random())
-        
+        let task = tasks[indexPath.row]
+        cell.renderCell(title: task.title,
+                        description: task.description,
+                        date: Date(),
+                        done: task.isCompleted)
         return cell
     }
     
     // MARK: - UITableViewDelegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
+    //MARK: - TaskListView
+    func showTasks(tasks: [TaskEntity]) {
+        self.tasks = tasks
+    }
+    
+    func showError(error: any Error) {
+        let alert = UIAlertController(title: "Ошибка",
+                                      message: error.localizedDescription,
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
     
     //MARK: - Action's

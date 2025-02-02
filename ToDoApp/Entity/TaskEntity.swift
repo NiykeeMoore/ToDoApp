@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct TaskEntity {
-    let taskId: UUID
+struct TaskEntity: Codable {
+    let taskId: Int
     let title: String
     let description: String
     let isCompleted: Bool
