@@ -9,8 +9,8 @@
 import UIKit
 
 final class TaskListViewController: UIViewController,
-                              UITableViewDataSource, UITableViewDelegate,
-                              UISearchResultsUpdating {
+                                    UITableViewDataSource, UITableViewDelegate,
+                                    UISearchResultsUpdating {
     // MARK: - Properties
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)

@@ -8,9 +8,9 @@
 import UIKit
 
 final class TaskListViewCell: UITableViewCell {
-
+    
     // MARK: - Properties
-
+    
     static let reuseIdentifier = "TaskListCell"
     
     private lazy var checkbox: CheckBox = {
@@ -63,9 +63,9 @@ final class TaskListViewCell: UITableViewCell {
         stack.spacing = 6
         return stack
     }()
-
+    
     // MARK: - Initialization
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .clear
@@ -73,13 +73,13 @@ final class TaskListViewCell: UITableViewCell {
         setupUI()
         setupConstraints()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - UI Setup
-
+    
     private func setupUI() {
         [checkbox, spacer, taskTitle, taskDescription, taskCreationDate].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -90,9 +90,9 @@ final class TaskListViewCell: UITableViewCell {
             contentView.addSubview($0)
         }
     }
-
+    
     // MARK: - Constraints
-
+    
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             buttonStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
@@ -105,9 +105,9 @@ final class TaskListViewCell: UITableViewCell {
             taskStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
     }
-
+    
     // MARK: - Public Helper Methods
-
+    
     func renderCell(title: String, description: String, date: Date, done: Bool) {
         taskTitle.text = title
         taskDescription.text = description
