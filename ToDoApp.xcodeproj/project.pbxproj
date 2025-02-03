@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		4B4C748B2D4E48DD00D0F395 /* ToDoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = ToDoApp.app; path = "/Users/shatazi/Desktop/projects/private/ToDoApp/build/Debug-iphoneos/ToDoApp.app"; sourceTree = "<absolute>"; };
+		4B51A69D2D50CADE00211E22 /* ToDoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -15,28 +15,16 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				Shared/Services/ToDoApp.xcdatamodeld,
 			);
 			target = 4B4C748A2D4E48DD00D0F395 /* ToDoApp */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		4B4C75042D4F965100D0F395 /* Exceptions for "ToDoApp" folder in "Compile Sources" phase from "ToDoApp" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 4B4C74872D4E48DD00D0F395 /* Sources */;
-			membershipExceptions = (
-				Shared/Services/ToDoApp.xcdatamodeld,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4B4C74F72D4F965100D0F395 /* ToDoApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				4B4C75032D4F965100D0F395 /* Exceptions for "ToDoApp" folder in "ToDoApp" target */,
-				4B4C75042D4F965100D0F395 /* Exceptions for "ToDoApp" folder in "Compile Sources" phase from "ToDoApp" target */,
 			);
 			path = ToDoApp;
 			sourceTree = "<group>";
@@ -58,6 +46,7 @@
 			isa = PBXGroup;
 			children = (
 				4B4C74F72D4F965100D0F395 /* ToDoApp */,
+				4B51A69D2D50CADE00211E22 /* ToDoApp.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -83,7 +72,7 @@
 			packageProductDependencies = (
 			);
 			productName = ToDoApp;
-			productReference = 4B4C748B2D4E48DD00D0F395 /* ToDoApp.app */;
+			productReference = 4B51A69D2D50CADE00211E22 /* ToDoApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
