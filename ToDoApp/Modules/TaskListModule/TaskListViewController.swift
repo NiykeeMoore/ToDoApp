@@ -136,7 +136,7 @@ final class TaskListViewController: UIViewController,
         let task = tasks[indexPath.row]
         cell.renderCell(title: task.title,
                         description: task.description,
-                        date: Date(),
+                        date: customDateFormat(with: task.dateCreation),
                         done: task.isCompleted)
         return cell
     }
@@ -163,6 +163,14 @@ final class TaskListViewController: UIViewController,
         guard let indexPath = taskList.indexPath(for: cell) else { return }
         print("Delegate method called. Tapped cell at index: \(indexPath.row)")
         presenter?.checkboxDidTapped(at: indexPath.row)
+    }
+    
+    // MARK: - Private Helper Methods
+    
+    private func customDateFormat(with date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        return dateFormatter.string(from: date)
     }
     
     //MARK: - Action's

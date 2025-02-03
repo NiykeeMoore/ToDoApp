@@ -109,7 +109,7 @@ final class TaskListViewCell: UITableViewCell {
     
     // MARK: - Public Helper Methods
     
-    func renderCell(title: String, description: String, date: Date, done: Bool) {
+    func renderCell(title: String, description: String, date: String, done: Bool) {
         taskTitle.text = title
         taskDescription.text = description
         taskCreationDate.text = date.description
