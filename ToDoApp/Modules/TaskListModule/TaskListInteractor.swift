@@ -9,7 +9,7 @@ import Foundation
 
 protocol TaskListInteractorInput: AnyObject {
     func fetchTasks()
-    func toggleTaskComplition(at index:Int)
+    func toggleTaskCompletion(at index:Int)
 }
 
 protocol TaskListInteractorOutput: AnyObject {
@@ -24,6 +24,7 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
     
     private var tasks: [TaskEntity] = []
     private let todosLoader: TodosLoading
+    private let taskStore = StoreManager.shared.taskStore
     
     // MARK: - Init
     init(todosLoader: TodosLoading) {
@@ -32,15 +33,28 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
     
     //MARK: - TaskListInteractorInput
     func fetchTasks() {
-        DispatchQueue.global(qos: .background).async { [weak self] in
-            guard let self else { return }
-            
+        if UserDefaultsSettings.shared.hasLaunchedBefore {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                
+                self.taskStore.fetchAllTasks { tasks in
+                    self.tasks = tasks
+                    self.presenter?.tasksFetched(self.tasks)
+                }
+            }
+        } else {
             todosLoader.load { result in
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
                     switch result {
-                    case .success(let success):
-                        self.presenter?.tasksFetched(success)
-                        self.tasks = success
+                    case .success(let loadedTasks):
+                        UserDefaultsSettings.shared.hasLaunchedBefore = true
+                        
+                        self.presenter?.tasksFetched(loadedTasks)
+                        self.tasks = loadedTasks
+                        loadedTasks.forEach { task in
+                            self.taskStore.saveTask(entity: task)
+                        }
                     case .failure(let failure):
                         self.presenter?.onError(failure)
                     }
@@ -49,8 +63,13 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
         }
     }
     
-    func toggleTaskComplition(at index: Int) {
+    func toggleTaskCompletion(at index: Int) {
         tasks[index].isCompleted.toggle()
-        presenter?.tasksFetched(tasks)
+        taskStore.saveTask(entity: tasks[index])
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.presenter?.tasksFetched(self.tasks)
+        }
     }
 }

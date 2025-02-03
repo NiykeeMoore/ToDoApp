@@ -23,7 +23,10 @@ final class TaskListViewController: UIViewController,
     var presenter: TaskListPresenterInput?
     private var tasks: [TaskEntity] = [] {
         didSet {
-            taskList.reloadData()
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.taskList.reloadData()
+            }
         }
     }
     
@@ -161,7 +164,6 @@ final class TaskListViewController: UIViewController,
     
     func checkboxTapped(in cell: TaskListViewCell) {
         guard let indexPath = taskList.indexPath(for: cell) else { return }
-        print("Delegate method called. Tapped cell at index: \(indexPath.row)")
         presenter?.checkboxDidTapped(at: indexPath.row)
     }
     

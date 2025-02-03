@@ -46,9 +46,7 @@ final class CheckBox: UIButton {
     // MARK: - Actions
     
     @objc func buttonClicked(in cell: TaskListViewCell) {
-        print("Нажата кнопка")
         if let cell = self.cell {
-            print("Провалились с ячейкой")
             checkboxDelegate?.checkboxTapped(in: cell)
         }
     }

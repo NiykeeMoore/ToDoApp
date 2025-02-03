@@ -25,13 +25,11 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
     }
     
     func checkboxDidTapped(at index: Int) {
-        print("Presenter: Checkbox tapped at index \(index)")
-        interactor?.toggleTaskComplition(at: index)
+        interactor?.toggleTaskCompletion(at: index)
     }
     
     // MARK: - TaskListInteractorOutput
     func tasksFetched(_ tasks: [TaskEntity]) {
-        print("команда view на отрисовку")
         view?.showTasks(tasks: tasks)
     }
     
