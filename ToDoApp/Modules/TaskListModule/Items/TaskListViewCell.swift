@@ -13,8 +13,9 @@ final class TaskListViewCell: UITableViewCell {
     
     static let reuseIdentifier = "TaskListCell"
     
-    private lazy var checkbox: CheckBox = {
+    lazy var checkbox: CheckBox = {
         let checkbox = CheckBox()
+        checkbox.cell = self // ссылка на ячейку
         return checkbox
     }()
     

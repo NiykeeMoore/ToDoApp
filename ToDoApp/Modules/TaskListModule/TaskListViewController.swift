@@ -16,7 +16,8 @@ protocol TaskListView: AnyObject {
 final class TaskListViewController: UIViewController,
                                     UITableViewDataSource, UITableViewDelegate,
                                     UISearchResultsUpdating,
-                                    TaskListView {
+                                    TaskListView,
+                                    CheckboxDelegate {
     // MARK: - Properties
     
     var presenter: TaskListPresenterInput?
@@ -25,7 +26,7 @@ final class TaskListViewController: UIViewController,
             taskList.reloadData()
         }
     }
-
+    
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
@@ -129,6 +130,9 @@ final class TaskListViewController: UIViewController,
                                                        for: indexPath) as? TaskListViewCell else {
             return UITableViewCell()
         }
+        
+        cell.checkbox.checkboxDelegate = self
+        
         let task = tasks[indexPath.row]
         cell.renderCell(title: task.title,
                         description: task.description,
@@ -153,6 +157,12 @@ final class TaskListViewController: UIViewController,
                                       preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+    
+    func checkboxTapped(in cell: TaskListViewCell) {
+        guard let indexPath = taskList.indexPath(for: cell) else { return }
+        print("Delegate method called. Tapped cell at index: \(indexPath.row)")
+        presenter?.checkboxDidTapped(at: indexPath.row)
     }
     
     //MARK: - Action's

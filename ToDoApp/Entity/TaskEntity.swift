@@ -11,6 +11,6 @@ struct TaskEntity: Codable {
     let taskId: Int
     let title: String
     let description: String
-    let isCompleted: Bool
+    var isCompleted: Bool
     let userId: Int // никак не используется
 }
