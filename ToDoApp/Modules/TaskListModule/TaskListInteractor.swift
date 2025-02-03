@@ -34,7 +34,9 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
     //MARK: - TaskListInteractorInput
     func fetchTasks() {
         if UserDefaultsSettings.shared.hasLaunchedBefore {
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                
                 self.taskStore.fetchAllTasks { tasks in
                     self.tasks = tasks
                     self.presenter?.tasksFetched(self.tasks)
@@ -42,7 +44,8 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
             }
         } else {
             todosLoader.load { result in
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
                     switch result {
                     case .success(let loadedTasks):
                         UserDefaultsSettings.shared.hasLaunchedBefore = true
@@ -64,7 +67,8 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
         tasks[index].isCompleted.toggle()
         taskStore.saveTask(entity: tasks[index])
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
             self.presenter?.tasksFetched(self.tasks)
         }
     }

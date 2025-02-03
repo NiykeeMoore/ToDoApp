@@ -50,7 +50,9 @@ final class TaskStore: NSObject,
     // MARK: - Public Helper Methods
     
     func saveTask(entity: TaskEntity) {
-        coreData.performBackgroundTask { context in
+        coreData.performBackgroundTask { [weak self] context in
+            guard let self else { return }
+            
             let cdTask = self.fetchCDTask(by: entity, in: context) ?? CDTask(context: context)
             
             cdTask.id = Int64(entity.taskId)
@@ -70,6 +72,7 @@ final class TaskStore: NSObject,
     
     func fetchAllTasks(completion: @escaping ([TaskEntity]) -> Void) {
         coreData.performBackgroundTask { context in
+            
             let fetchRequest: NSFetchRequest<CDTask> = CDTask.fetchRequest()
             fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
             
@@ -96,7 +99,9 @@ final class TaskStore: NSObject,
     }
     
     func remove(task: TaskEntity) {
-        coreData.performBackgroundTask { context in
+        coreData.performBackgroundTask { [weak self] context in
+            guard let self else { return }
+            
             guard let selectedTask = self.fetchCDTask(by: task, in: context) else { return }
             context.delete(selectedTask)
             
