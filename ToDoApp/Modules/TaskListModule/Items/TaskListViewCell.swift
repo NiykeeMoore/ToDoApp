@@ -13,8 +13,9 @@ final class TaskListViewCell: UITableViewCell {
     
     static let reuseIdentifier = "TaskListCell"
     
-    private lazy var checkbox: CheckBox = {
+    lazy var checkbox: CheckBox = {
         let checkbox = CheckBox()
+        checkbox.cell = self // ссылка на ячейку
         return checkbox
     }()
     
@@ -108,7 +109,7 @@ final class TaskListViewCell: UITableViewCell {
     
     // MARK: - Public Helper Methods
     
-    func renderCell(title: String, description: String, date: Date, done: Bool) {
+    func renderCell(title: String, description: String, date: String, done: Bool) {
         taskTitle.text = title
         taskDescription.text = description
         taskCreationDate.text = date.description

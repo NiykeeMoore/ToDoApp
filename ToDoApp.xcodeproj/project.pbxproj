@@ -7,24 +7,36 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		4B4C748B2D4E48DD00D0F395 /* ToDoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B4C748B2D4E48DD00D0F395 /* ToDoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = ToDoApp.app; path = "/Users/shatazi/Desktop/projects/private/ToDoApp/build/Debug-iphoneos/ToDoApp.app"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		4B4C74A02D4E48DE00D0F395 /* Exceptions for "ToDoApp" folder in "ToDoApp" target */ = {
+		4B4C75032D4F965100D0F395 /* Exceptions for "ToDoApp" folder in "ToDoApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Shared/Services/ToDoApp.xcdatamodeld,
 			);
 			target = 4B4C748A2D4E48DD00D0F395 /* ToDoApp */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		4B4C75042D4F965100D0F395 /* Exceptions for "ToDoApp" folder in "Compile Sources" phase from "ToDoApp" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 4B4C74872D4E48DD00D0F395 /* Sources */;
+			membershipExceptions = (
+				Shared/Services/ToDoApp.xcdatamodeld,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		4B4C748D2D4E48DD00D0F395 /* ToDoApp */ = {
+		4B4C74F72D4F965100D0F395 /* ToDoApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				4B4C74A02D4E48DE00D0F395 /* Exceptions for "ToDoApp" folder in "ToDoApp" target */,
+				4B4C75032D4F965100D0F395 /* Exceptions for "ToDoApp" folder in "ToDoApp" target */,
+				4B4C75042D4F965100D0F395 /* Exceptions for "ToDoApp" folder in "Compile Sources" phase from "ToDoApp" target */,
 			);
 			path = ToDoApp;
 			sourceTree = "<group>";
@@ -45,17 +57,8 @@
 		4B4C74822D4E48DD00D0F395 = {
 			isa = PBXGroup;
 			children = (
-				4B4C748D2D4E48DD00D0F395 /* ToDoApp */,
-				4B4C748C2D4E48DD00D0F395 /* Products */,
+				4B4C74F72D4F965100D0F395 /* ToDoApp */,
 			);
-			sourceTree = "<group>";
-		};
-		4B4C748C2D4E48DD00D0F395 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4B4C748B2D4E48DD00D0F395 /* ToDoApp.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -74,7 +77,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				4B4C748D2D4E48DD00D0F395 /* ToDoApp */,
+				4B4C74F72D4F965100D0F395 /* ToDoApp */,
 			);
 			name = ToDoApp;
 			packageProductDependencies = (
@@ -108,7 +111,7 @@
 			mainGroup = 4B4C74822D4E48DD00D0F395;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 4B4C748C2D4E48DD00D0F395 /* Products */;
+			productRefGroup = 4B4C74822D4E48DD00D0F395;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
