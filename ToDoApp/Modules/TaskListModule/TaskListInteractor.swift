@@ -35,14 +35,19 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
         DispatchQueue.global(qos: .background).async { [weak self] in
             guard let self else { return }
             
-            todosLoader.load { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let success):
-                        self.presenter?.tasksFetched(success)
-                        self.tasks = success
-                    case .failure(let failure):
-                        self.presenter?.onError(failure)
+            if UserDefaultsSettings.shared.hasLaunchedBefore {
+                
+            } else {
+                UserDefaultsSettings.shared.hasLaunchedBefore = true
+                todosLoader.load { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let success):
+                            self.presenter?.tasksFetched(success)
+                            self.tasks = success
+                        case .failure(let failure):
+                            self.presenter?.onError(failure)
+                        }
                     }
                 }
             }
