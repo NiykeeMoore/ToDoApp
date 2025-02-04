@@ -11,6 +11,7 @@ protocol TaskListInteractorInput: AnyObject {
     func fetchTasks()
     func toggleTaskCompletion(at index:Int)
     func shareTask(with shareContent: String)
+    func taskDeletion(for task: TaskEntity, completion: @escaping (Result<Void, Error>) -> Void)
 }
 
 protocol TaskListInteractorOutput: AnyObject {
@@ -29,7 +30,7 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
     private var tasks: [TaskEntity] = []
     private let todosLoader: TodosLoading
     private let taskStore = StoreManager.shared.taskStore
-
+    
     
     // MARK: - Init
     init(todosLoader: TodosLoading) {
@@ -80,5 +81,15 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
     
     func shareTask(with shareContent: String) {
         presenter?.shareTask(with: shareContent)
+    }
+    
+    func taskDeletion(for task: TaskEntity, completion: @escaping (Result<Void, Error>) -> Void) {
+        taskStore.remove(task: task)
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.fetchTasks()
+            completion(.success(()))
+        }
     }
 }

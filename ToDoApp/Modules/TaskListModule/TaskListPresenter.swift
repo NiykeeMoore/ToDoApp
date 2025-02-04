@@ -37,7 +37,15 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
             let shareContent = task.title
             interactor?.shareTask(with: shareContent)
         case .delete:
-            print(3)
+            interactor?.taskDeletion(for: task) { [weak self] result in
+                guard let self else { return }
+                switch result {
+                case .success():
+                    self.interactor?.fetchTasks()
+                case .failure(let error):
+                    self.view?.showError(error: error)
+                }
+            }
         }
     }
     
