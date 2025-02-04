@@ -18,6 +18,9 @@ final class TaskListViewController: UIViewController,
                                     UISearchResultsUpdating,
                                     TaskListView,
                                     CheckboxDelegate {
+    
+    
+    
     // MARK: - Properties
     
     var presenter: TaskListPresenterInput?
@@ -165,6 +168,56 @@ final class TaskListViewController: UIViewController,
     func checkboxTapped(in cell: TaskListViewCell) {
         guard let indexPath = taskList.indexPath(for: cell) else { return }
         presenter?.checkboxDidTapped(at: indexPath.row)
+    }
+    
+    //MARK: - contextMenuConfigurationForRowAt
+    
+    func tableView(_ tableView: UITableView,
+                   contextMenuConfigurationForRowAt indexPath: IndexPath,
+                   point: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: indexPath as NSCopying,
+                                          previewProvider: nil) { _ in
+            let edit = UIAction(title: ContextMenu.edit.rawValue,
+                                image: UIImage(systemName: "square.and.pencil")) { [weak self] _ in
+                guard let self else { return }
+                
+                self.presenter?.didSelectMenuOption(.edit)
+            }
+            let share = UIAction(title: ContextMenu.share.rawValue,
+                                 image: UIImage(systemName: "square.and.arrow.up")) { [weak self] _ in
+                guard let self else { return }
+                
+                self.presenter?.didSelectMenuOption(.share)
+            }
+            let delete = UIAction(title: ContextMenu.delete.rawValue,
+                                  image: UIImage(systemName: "trash"),
+                                  attributes: [.destructive]) { [weak self] _ in
+                guard let self else { return }
+                
+                self.presenter?.didSelectMenuOption(.delete)
+            }
+            
+            return UIMenu(title: "", children: [edit, share, delete])
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        return makeTargetedPreview(for: configuration)
+    }
+    
+    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        return makeTargetedPreview(for: configuration)
+    }
+    
+    private func makeTargetedPreview(for configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        guard let indexPath = configuration.identifier as? IndexPath else { return nil }
+        guard let cell = taskList.cellForRow(at: indexPath) as? TaskListViewCell else { return nil }
+        
+        let parameters = UIPreviewParameters()
+        parameters.backgroundColor = .ccGray
+        parameters.visiblePath = UIBezierPath(rect: cell.taskStackView.bounds)
+        
+        return UITargetedPreview(view: cell.taskStackView, parameters: parameters)
     }
     
     // MARK: - Private Helper Methods

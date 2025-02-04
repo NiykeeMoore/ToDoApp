@@ -10,6 +10,7 @@ import Foundation
 protocol TaskListPresenterInput: AnyObject {
     func viewDidLoad()
     func checkboxDidTapped(at index: Int)
+    func didSelectMenuOption(_ option: ContextMenu)
 }
 
 final class TaskListPresenterImpl: TaskListPresenterInput,
@@ -26,6 +27,17 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
     
     func checkboxDidTapped(at index: Int) {
         interactor?.toggleTaskCompletion(at: index)
+    }
+    
+    func didSelectMenuOption(_ option: ContextMenu) {
+        switch option {
+        case .edit:
+            print(1)
+        case .share:
+            print(2)
+        case .delete:
+            print(3)
+        }
     }
     
     // MARK: - TaskListInteractorOutput

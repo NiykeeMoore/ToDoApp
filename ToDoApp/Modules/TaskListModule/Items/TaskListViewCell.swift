@@ -56,12 +56,14 @@ final class TaskListViewCell: UITableViewCell {
         return label
     }()
     
-    private lazy var taskStackView: UIStackView = {
+    lazy var taskStackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [taskTitle, taskDescription, taskCreationDate])
         stack.backgroundColor = .clear
         stack.alignment = .leading
         stack.axis = .vertical
         stack.spacing = 6
+        stack.distribution = .fill
+        stack.clipsToBounds = true
         return stack
     }()
     
@@ -77,6 +79,12 @@ final class TaskListViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        taskTitle.text = ""
+        taskDescription.text = ""
+        taskCreationDate.text = ""
     }
     
     // MARK: - UI Setup
