@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		4B51A69D2D50CADE00211E22 /* ToDoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B51A69D2D50CADE00211E22 /* ToDoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = ToDoApp.app; path = "/Users/shatazi/Desktop/projects/private/ToDoApp/build/Debug-iphoneos/ToDoApp.app"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -46,7 +46,6 @@
 			isa = PBXGroup;
 			children = (
 				4B4C74F72D4F965100D0F395 /* ToDoApp */,
-				4B51A69D2D50CADE00211E22 /* ToDoApp.app */,
 			);
 			sourceTree = "<group>";
 		};
