@@ -9,6 +9,7 @@ import UIKit
 
 protocol TaskListRouter: AnyObject {
     static func createModule() -> UIViewController
+    func navigateToShare(with content: String, from view: UIViewController)
 }
 
 final class TaskListRouterImpl: TaskListRouter {
@@ -26,5 +27,18 @@ final class TaskListRouterImpl: TaskListRouter {
         interactor.presenter = presenter      // Interactor -> Presenter
         
         return view
+    }
+    
+    func navigateToShare(with content: String, from view: UIViewController) {
+        let activityVC = UIActivityViewController(activityItems: [content], applicationActivities: nil)
+        if let popoverController = activityVC.popoverPresentationController {
+            popoverController.sourceView = view.view
+            popoverController.sourceRect = CGRect(x: view.view.bounds.midX,
+                                                  y: view.view.bounds.midY,
+                                                  width: 0,
+                                                  height: 0)
+            popoverController.permittedArrowDirections = []
+        }
+        view.present(activityVC, animated: true, completion: nil)
     }
 }

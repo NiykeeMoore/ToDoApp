@@ -10,7 +10,7 @@ import Foundation
 protocol TaskListPresenterInput: AnyObject {
     func viewDidLoad()
     func checkboxDidTapped(at index: Int)
-    func didSelectMenuOption(_ option: ContextMenu)
+    func didSelectMenuOption(_ option: ContextMenu, task: TaskEntity)
 }
 
 final class TaskListPresenterImpl: TaskListPresenterInput,
@@ -29,12 +29,13 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
         interactor?.toggleTaskCompletion(at: index)
     }
     
-    func didSelectMenuOption(_ option: ContextMenu) {
+    func didSelectMenuOption(_ option: ContextMenu, task: TaskEntity) {
         switch option {
         case .edit:
             print(1)
         case .share:
-            print(2)
+            let shareContent = task.title
+            interactor?.shareTask(with: shareContent)
         case .delete:
             print(3)
         }
@@ -47,5 +48,9 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
     
     func onError(_ error: Error) {
         view?.showError(error: error)
+    }
+    
+    func shareTask(with shareContent: String) {
+        view?.showShareScreen(with: shareContent)
     }
 }

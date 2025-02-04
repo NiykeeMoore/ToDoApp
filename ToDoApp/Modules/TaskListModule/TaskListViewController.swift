@@ -11,6 +11,7 @@ import UIKit
 protocol TaskListView: AnyObject {
     func showTasks(tasks: [TaskEntity])
     func showError(error: Error)
+    func showShareScreen(with shareContent: String)
 }
 
 final class TaskListViewController: UIViewController,
@@ -170,6 +171,20 @@ final class TaskListViewController: UIViewController,
         presenter?.checkboxDidTapped(at: indexPath.row)
     }
     
+    func showShareScreen(with shareContent: String) {
+        let activityVC = UIActivityViewController(activityItems: [shareContent],
+                                                  applicationActivities: nil)
+        if let popoverController = activityVC.popoverPresentationController {
+            popoverController.sourceView = self.view
+            popoverController.sourceRect = CGRect(x: self.view.bounds.midX,
+                                                  y: self.view.bounds.midY,
+                                                  width: 0,
+                                                  height: 0)
+            popoverController.permittedArrowDirections = []
+        }
+        self.present(activityVC, animated: true, completion: nil)
+    }
+    
     //MARK: - contextMenuConfigurationForRowAt
     
     func tableView(_ tableView: UITableView,
@@ -181,20 +196,20 @@ final class TaskListViewController: UIViewController,
                                 image: UIImage(systemName: "square.and.pencil")) { [weak self] _ in
                 guard let self else { return }
                 
-                self.presenter?.didSelectMenuOption(.edit)
+                self.presenter?.didSelectMenuOption(.edit, task: tasks[indexPath.row])
             }
             let share = UIAction(title: ContextMenu.share.rawValue,
                                  image: UIImage(systemName: "square.and.arrow.up")) { [weak self] _ in
                 guard let self else { return }
                 
-                self.presenter?.didSelectMenuOption(.share)
+                self.presenter?.didSelectMenuOption(.share, task: tasks[indexPath.row])
             }
             let delete = UIAction(title: ContextMenu.delete.rawValue,
                                   image: UIImage(systemName: "trash"),
                                   attributes: [.destructive]) { [weak self] _ in
                 guard let self else { return }
                 
-                self.presenter?.didSelectMenuOption(.delete)
+                self.presenter?.didSelectMenuOption(.delete, task: tasks[indexPath.row])
             }
             
             return UIMenu(title: "", children: [edit, share, delete])
