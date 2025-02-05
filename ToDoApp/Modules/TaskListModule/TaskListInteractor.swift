@@ -70,7 +70,9 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
     }
     
     func toggleTaskCompletion(at index: Int) {
-        tasks[index].isCompleted.toggle()
+        let updatedTask = tasks[index].update(isCompleted: !tasks[index].isCompleted)
+        tasks[index] = updatedTask
+        
         taskStore.saveTask(entity: tasks[index])
         
         DispatchQueue.main.async { [weak self] in
@@ -87,7 +89,7 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
         taskStore.remove(task: task)
         
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.fetchTasks()
             completion(.success(()))
         }

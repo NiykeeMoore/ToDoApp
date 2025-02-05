@@ -5,12 +5,13 @@
 //  Created by Niykee Moore on 02.02.2025.
 //
 
-import Foundation
+import UIKit
 
 protocol TaskListPresenterInput: AnyObject {
-    func viewDidLoad()
+    func viewWillAppear()
     func checkboxDidTapped(at index: Int)
-    func didSelectMenuOption(_ option: ContextMenu, task: TaskEntity)
+    func didSelectMenuOption(_ option: ContextMenu, task: TaskEntity, view: UIViewController?)
+    func createNewTaskButtonTapped(from view: UIViewController)
 }
 
 final class TaskListPresenterImpl: TaskListPresenterInput,
@@ -19,9 +20,10 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
     //MARK: - Properties
     weak var view: TaskListView?
     var interactor: TaskListInteractorInput?
+    var router: TaskListRouter?
     
     // MARK: - TaskListPresenterInput
-    func viewDidLoad() {
+    func viewWillAppear() {
         interactor?.fetchTasks()
     }
     
@@ -29,10 +31,12 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
         interactor?.toggleTaskCompletion(at: index)
     }
     
-    func didSelectMenuOption(_ option: ContextMenu, task: TaskEntity) {
+    func didSelectMenuOption(_ option: ContextMenu, task: TaskEntity, view: UIViewController?) {
         switch option {
         case .edit:
-            print(1)
+            guard let view else { return }
+            router?.navigateToTaskDetail(for: task, from: view)
+            
         case .share:
             let shareContent = task.title
             interactor?.shareTask(with: shareContent)
@@ -60,5 +64,10 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
     
     func shareTask(with shareContent: String) {
         view?.showShareScreen(with: shareContent)
+    }
+    
+    func createNewTaskButtonTapped(from view: UIViewController) {
+        router?.navigateToTaskDetail(for: nil, from: view)
+        print(view)
     }
 }

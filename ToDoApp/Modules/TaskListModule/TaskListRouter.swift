@@ -10,6 +10,7 @@ import UIKit
 protocol TaskListRouter: AnyObject {
     static func createModule() -> UIViewController
     func navigateToShare(with content: String, from view: UIViewController)
+    func navigateToTaskDetail(for task: TaskEntity?, from view: UIViewController)
 }
 
 final class TaskListRouterImpl: TaskListRouter {
@@ -19,12 +20,13 @@ final class TaskListRouterImpl: TaskListRouter {
         let networkClient = NetworkClient()
         let todosLoader = TodosLoader(networkClient: networkClient)
         let interactor = TaskListInteractorImpl(todosLoader: todosLoader)
-        
+        let router = TaskListRouterImpl()
         
         view.presenter = presenter             // View -> Presenter
         presenter.view = view                  // Presenter -> View
         presenter.interactor = interactor      // Presenter -> Interactor
-        interactor.presenter = presenter      // Interactor -> Presenter
+        interactor.presenter = presenter       // Interactor -> Presenter
+        presenter.router = router              // Presenter -> Router
         
         return view
     }
@@ -40,5 +42,10 @@ final class TaskListRouterImpl: TaskListRouter {
             popoverController.permittedArrowDirections = []
         }
         view.present(activityVC, animated: true, completion: nil)
+    }
+    
+    func navigateToTaskDetail(for task: TaskEntity?, from view: UIViewController) {
+        let detailVC = TaskDetailRouterImpl.createModule(with: task)
+        view.navigationController?.pushViewController(detailVC, animated: true)
     }
 }

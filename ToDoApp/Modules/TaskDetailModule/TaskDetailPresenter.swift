@@ -9,10 +9,11 @@ import Foundation
 
 protocol TaskDetailPresenterInput: AnyObject {
     func viewDidLoad()
-    func didTapExit()
+    func didTapExit(save: TaskEntity?)
 }
 
 final class TaskDetailPresenterImpl: TaskDetailPresenterInput {
+    
     weak var view: TaskDetailView?
     var interactor: TaskDetailInteractorInput?
     var router: TaskDetailRouter?
@@ -21,19 +22,24 @@ final class TaskDetailPresenterImpl: TaskDetailPresenterInput {
     
     // MARK: - TaskListDetailPresenterInput
     func viewDidLoad() {
-        if let task {
-            view?.showTaskDetail(task: task)
+        if let exsitingTask = task {
+            view?.showTaskDetail(task: exsitingTask)
+        } else {
+            let newTask = TaskEntity(taskId: 0,
+                                     title: "",
+                                     description: "",
+                                     isCompleted: false,
+                                     dateCreation: Date(),
+                                     userId: 0)
+            self.task = newTask
+            view?.showTaskDetail(task: newTask)
         }
     }
     
-    // MARK: - TaskListDetailInteractorOutput
-    func taskFetched(_ task: TaskEntity) {
-        
-    }
-    
-    func didTapExit() {
+    func didTapExit(save task: TaskEntity?) {
         if let task {
-            interactor?.saveTask(task)
+            interactor?.saveTask(task: task)
         }
+        router?.navigateBack()
     }
 }

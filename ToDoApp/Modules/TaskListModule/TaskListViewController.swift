@@ -30,9 +30,13 @@ final class TaskListViewController: UIViewController,
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
                 self.taskList.reloadData()
+                self.countOfTasks = self.tasks.count
+                self.configureToolbar()
             }
         }
     }
+    
+    private var countOfTasks: Int = 0
     
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
@@ -61,7 +65,11 @@ final class TaskListViewController: UIViewController,
         
         definesPresentationContext = true // обеспечивает представление UISearchController в границах этого VC
         
-        presenter?.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter?.viewWillAppear()
     }
     
     // MARK: - UI Setup
@@ -94,7 +102,7 @@ final class TaskListViewController: UIViewController,
     }
     
     private func configureToolbar() {
-        let toolBar = ToolbarConfigurator.createToolbarView(title: "\(tasks.count) задач",
+        let toolBar = ToolbarConfigurator.createToolbarView(title: "\(countOfTasks) задач",
                                                             buttonImage: "square.and.pencil",
                                                             buttonTarget: self,
                                                             buttonAction: #selector(createNoteButtonTapped),
@@ -192,24 +200,31 @@ final class TaskListViewController: UIViewController,
                    point: CGPoint) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(identifier: indexPath as NSCopying,
                                           previewProvider: nil) { _ in
+            
             let edit = UIAction(title: ContextMenu.edit.rawValue,
                                 image: UIImage(systemName: "square.and.pencil")) { [weak self] _ in
                 guard let self else { return }
                 
-                self.presenter?.didSelectMenuOption(.edit, task: tasks[indexPath.row])
+                self.presenter?.didSelectMenuOption(.edit,
+                                                    task: tasks[indexPath.row],
+                                                    view: self)
             }
             let share = UIAction(title: ContextMenu.share.rawValue,
                                  image: UIImage(systemName: "square.and.arrow.up")) { [weak self] _ in
                 guard let self else { return }
                 
-                self.presenter?.didSelectMenuOption(.share, task: tasks[indexPath.row])
+                self.presenter?.didSelectMenuOption(.share,
+                                                    task: tasks[indexPath.row],
+                                                    view: self)
             }
             let delete = UIAction(title: ContextMenu.delete.rawValue,
                                   image: UIImage(systemName: "trash"),
                                   attributes: [.destructive]) { [weak self] _ in
                 guard let self else { return }
                 
-                self.presenter?.didSelectMenuOption(.delete, task: tasks[indexPath.row])
+                self.presenter?.didSelectMenuOption(.delete,
+                                                    task: tasks[indexPath.row],
+                                                    view: nil)
             }
             
             return UIMenu(title: "", children: [edit, share, delete])
@@ -245,6 +260,6 @@ final class TaskListViewController: UIViewController,
     
     //MARK: - Action's
     @objc private func createNoteButtonTapped() {
-        print("tapped")
+        presenter?.createNewTaskButtonTapped(from: self)
     }
 }
