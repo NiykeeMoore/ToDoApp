@@ -11,6 +11,7 @@ import UIKit
 protocol TaskListView: AnyObject {
     func showTasks(tasks: [TaskEntity])
     func showError(error: Error)
+    func showShareScreen(with shareContent: String)
 }
 
 final class TaskListViewController: UIViewController,
@@ -18,6 +19,9 @@ final class TaskListViewController: UIViewController,
                                     UISearchResultsUpdating,
                                     TaskListView,
                                     CheckboxDelegate {
+    
+    
+    
     // MARK: - Properties
     
     var presenter: TaskListPresenterInput?
@@ -26,9 +30,13 @@ final class TaskListViewController: UIViewController,
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
                 self.taskList.reloadData()
+                self.countOfTasks = self.tasks.count
+                self.configureToolbar()
             }
         }
     }
+    
+    private var countOfTasks: Int = 0
     
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
@@ -57,7 +65,11 @@ final class TaskListViewController: UIViewController,
         
         definesPresentationContext = true // обеспечивает представление UISearchController в границах этого VC
         
-        presenter?.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter?.viewWillAppear()
     }
     
     // MARK: - UI Setup
@@ -90,7 +102,7 @@ final class TaskListViewController: UIViewController,
     }
     
     private func configureToolbar() {
-        let toolBar = ToolbarConfigurator.createToolbarView(title: "\(tasks.count) задач",
+        let toolBar = ToolbarConfigurator.createToolbarView(title: "\(countOfTasks) задач",
                                                             buttonImage: "square.and.pencil",
                                                             buttonTarget: self,
                                                             buttonAction: #selector(createNoteButtonTapped),
@@ -167,6 +179,77 @@ final class TaskListViewController: UIViewController,
         presenter?.checkboxDidTapped(at: indexPath.row)
     }
     
+    func showShareScreen(with shareContent: String) {
+        let activityVC = UIActivityViewController(activityItems: [shareContent],
+                                                  applicationActivities: nil)
+        if let popoverController = activityVC.popoverPresentationController {
+            popoverController.sourceView = self.view
+            popoverController.sourceRect = CGRect(x: self.view.bounds.midX,
+                                                  y: self.view.bounds.midY,
+                                                  width: 0,
+                                                  height: 0)
+            popoverController.permittedArrowDirections = []
+        }
+        self.present(activityVC, animated: true, completion: nil)
+    }
+    
+    //MARK: - contextMenuConfigurationForRowAt
+    
+    func tableView(_ tableView: UITableView,
+                   contextMenuConfigurationForRowAt indexPath: IndexPath,
+                   point: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: indexPath as NSCopying,
+                                          previewProvider: nil) { _ in
+            
+            let edit = UIAction(title: ContextMenu.edit.rawValue,
+                                image: UIImage(systemName: "square.and.pencil")) { [weak self] _ in
+                guard let self else { return }
+                
+                self.presenter?.didSelectMenuOption(.edit,
+                                                    task: tasks[indexPath.row],
+                                                    view: self)
+            }
+            let share = UIAction(title: ContextMenu.share.rawValue,
+                                 image: UIImage(systemName: "square.and.arrow.up")) { [weak self] _ in
+                guard let self else { return }
+                
+                self.presenter?.didSelectMenuOption(.share,
+                                                    task: tasks[indexPath.row],
+                                                    view: self)
+            }
+            let delete = UIAction(title: ContextMenu.delete.rawValue,
+                                  image: UIImage(systemName: "trash"),
+                                  attributes: [.destructive]) { [weak self] _ in
+                guard let self else { return }
+                
+                self.presenter?.didSelectMenuOption(.delete,
+                                                    task: tasks[indexPath.row],
+                                                    view: nil)
+            }
+            
+            return UIMenu(title: "", children: [edit, share, delete])
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        return makeTargetedPreview(for: configuration)
+    }
+    
+    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        return makeTargetedPreview(for: configuration)
+    }
+    
+    private func makeTargetedPreview(for configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        guard let indexPath = configuration.identifier as? IndexPath else { return nil }
+        guard let cell = taskList.cellForRow(at: indexPath) as? TaskListViewCell else { return nil }
+        
+        let parameters = UIPreviewParameters()
+        parameters.backgroundColor = .ccGray
+        parameters.visiblePath = UIBezierPath(rect: cell.taskStackView.bounds)
+        
+        return UITargetedPreview(view: cell.taskStackView, parameters: parameters)
+    }
+    
     // MARK: - Private Helper Methods
     
     private func customDateFormat(with date: Date) -> String {
@@ -177,6 +260,6 @@ final class TaskListViewController: UIViewController,
     
     //MARK: - Action's
     @objc private func createNoteButtonTapped() {
-        print("tapped")
+        presenter?.createNewTaskButtonTapped(from: self)
     }
 }
