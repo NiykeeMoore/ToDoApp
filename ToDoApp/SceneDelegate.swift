@@ -15,6 +15,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .ccBlack
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.ccWhite]
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.ccWhite]
+        
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        
         let rootVC = TaskListRouterImpl.createModule()
         window.rootViewController = UINavigationController(rootViewController: rootVC)
         

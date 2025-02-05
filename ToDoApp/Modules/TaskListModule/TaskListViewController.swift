@@ -84,15 +84,6 @@ final class TaskListViewController: UIViewController,
     private func configureNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = "Задачи"
-        
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .ccBlack
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.ccWhite]
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.ccWhite]
-        
-        navigationController?.navigationBar.standardAppearance = appearance
-        navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
     
     private func configureSearchController() {

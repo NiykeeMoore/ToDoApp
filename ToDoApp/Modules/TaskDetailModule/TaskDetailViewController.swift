@@ -76,11 +76,18 @@ final class TaskDetailViewController: UIViewController,
     }
     
     private func configureNavigationBar() {
-        let backButton = UIBarButtonItem(title: "Назад",
-                                         style: .plain,
-                                         target: self,
-                                         action: #selector(backButtonTapped))
-        navigationItem.leftBarButtonItem = backButton
+        let backButton = UIButton(type: .system)
+        if let chevronImage = UIImage(systemName: "chevron.left") {
+            backButton.setImage(chevronImage, for: .normal)
+        }
+        
+        backButton.setTitle(" Назад", for: .normal)
+        backButton.sizeToFit()
+        backButton.tintColor = .ccYellow
+        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+        
+        let barButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.leftBarButtonItem = barButtonItem
     }
     
     // MARK: - Constraints
