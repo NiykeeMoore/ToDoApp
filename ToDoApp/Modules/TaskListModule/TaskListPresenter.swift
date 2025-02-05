@@ -5,11 +5,13 @@
 //  Created by Niykee Moore on 02.02.2025.
 //
 
-import Foundation
+import UIKit
 
 protocol TaskListPresenterInput: AnyObject {
-    func viewDidLoad()
+    func viewWillAppear()
     func checkboxDidTapped(at index: Int)
+    func didSelectMenuOption(_ option: ContextMenu, task: TaskEntity, view: UIViewController?)
+    func createNewTaskButtonTapped(from view: UIViewController)
 }
 
 final class TaskListPresenterImpl: TaskListPresenterInput,
@@ -18,14 +20,37 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
     //MARK: - Properties
     weak var view: TaskListView?
     var interactor: TaskListInteractorInput?
+    var router: TaskListRouter?
     
     // MARK: - TaskListPresenterInput
-    func viewDidLoad() {
+    func viewWillAppear() {
         interactor?.fetchTasks()
     }
     
     func checkboxDidTapped(at index: Int) {
         interactor?.toggleTaskCompletion(at: index)
+    }
+    
+    func didSelectMenuOption(_ option: ContextMenu, task: TaskEntity, view: UIViewController?) {
+        switch option {
+        case .edit:
+            guard let view else { return }
+            router?.navigateToTaskDetail(for: task, from: view)
+            
+        case .share:
+            let shareContent = task.title
+            interactor?.shareTask(with: shareContent)
+        case .delete:
+            interactor?.taskDeletion(for: task) { [weak self] result in
+                guard let self else { return }
+                switch result {
+                case .success():
+                    self.interactor?.fetchTasks()
+                case .failure(let error):
+                    self.view?.showError(error: error)
+                }
+            }
+        }
     }
     
     // MARK: - TaskListInteractorOutput
@@ -35,5 +60,14 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
     
     func onError(_ error: Error) {
         view?.showError(error: error)
+    }
+    
+    func shareTask(with shareContent: String) {
+        view?.showShareScreen(with: shareContent)
+    }
+    
+    func createNewTaskButtonTapped(from view: UIViewController) {
+        router?.navigateToTaskDetail(for: nil, from: view)
+        print(view)
     }
 }

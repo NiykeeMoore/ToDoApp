@@ -8,7 +8,7 @@
 import Foundation
 
 protocol TaskDetailInteractorInput {
-    func saveTask(_ task: TaskEntity)
+    func saveTask(task: TaskEntity)
 }
 
 final class TaskDetailInteractorImpl: TaskDetailInteractorInput {
@@ -16,8 +16,8 @@ final class TaskDetailInteractorImpl: TaskDetailInteractorInput {
     weak var presenter: TaskDetailPresenterInput?
     
     private let taskStore = StoreManager.shared.taskStore
-
-    func saveTask(_ task: TaskEntity) {
+    
+    func saveTask(task: TaskEntity) {
         taskStore.saveTask(entity: task)
     }
 }

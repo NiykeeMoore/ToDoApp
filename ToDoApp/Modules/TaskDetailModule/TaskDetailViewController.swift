@@ -17,12 +17,13 @@ final class TaskDetailViewController: UIViewController,
     
     // MARK: - Properties
     var presenter: TaskDetailPresenterInput?
+    var task: TaskEntity?
     
     private lazy var taskTitleTextField: UITextField = {
         let textField = UITextField()
         textField.font = .boldSystemFont(ofSize: 34)
         textField.textColor = .ccWhite
-        textField.text = "lolkekechebutertn"
+        textField.placeholder = "Тема todo"
         return textField
     }()
     
@@ -30,7 +31,6 @@ final class TaskDetailViewController: UIViewController,
         let label = UILabel()
         label.font = .systemFont(ofSize: 12)
         label.textColor = .ccWhite50Percent
-        label.text = "25.52.52"
         return label
     }()
     
@@ -38,7 +38,7 @@ final class TaskDetailViewController: UIViewController,
         let textView = UITextView()
         textView.backgroundColor = .clear
         textView.textColor = .ccWhite
-        textView.text = "asdadasdasdasdasdasdasd"
+        textView.font = .systemFont(ofSize: 16)
         return textView
     }()
     
@@ -58,24 +58,33 @@ final class TaskDetailViewController: UIViewController,
         configureUI()
         configureConstraints()
         
+        configureNavigationBar()
         presenter?.viewDidLoad()
     }
     
     // MARK: - UI Setup
-    func configureUI() {
+    private func configureUI() {
         addSubviews()
         configureConstraints()
     }
     
-    func addSubviews() {
+    private func addSubviews() {
         [headStackView, taskDescriptionTextView].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
     }
     
+    private func configureNavigationBar() {
+        let backButton = UIBarButtonItem(title: "Назад",
+                                         style: .plain,
+                                         target: self,
+                                         action: #selector(backButtonTapped))
+        navigationItem.leftBarButtonItem = backButton
+    }
+    
     // MARK: - Constraints
-    func configureConstraints() {
+    private func configureConstraints() {
         NSLayoutConstraint.activate([
             headStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             headStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
@@ -90,8 +99,10 @@ final class TaskDetailViewController: UIViewController,
     
     // MARK: - TasklistView
     func showTaskDetail(task: TaskEntity) {
+        self.task = task
+        
         taskTitleTextField.text = task.title
-        taskDateLabel.text = task.dateCreation.description
+        taskDateLabel.text = shortDateFormat(with: task.dateCreation)
         taskDescriptionTextView.text = task.description
     }
     
@@ -101,5 +112,29 @@ final class TaskDetailViewController: UIViewController,
                                       preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+    
+    // MARK: - Private Helper methods
+    private func shortDateFormat(with date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        return dateFormatter.string(from: date)
+    }
+    
+    @objc private func backButtonTapped() {
+        guard let currentTask = task,
+              let newTitle = taskTitleTextField.text, !newTitle.isEmpty,
+              let newDescription = taskDescriptionTextView.text else {
+            presenter?.didTapExit(save: nil)
+            return
+        }
+        
+        if currentTask.title == newTitle && currentTask.description == newDescription {
+            presenter?.didTapExit(save: nil)
+        } else {
+            let updatedTask = currentTask.update(newTitle: newTitle)
+                .update(newDescription: newDescription)
+            presenter?.didTapExit(save: updatedTask)
+        }
     }
 }

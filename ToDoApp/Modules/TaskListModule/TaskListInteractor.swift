@@ -10,21 +10,27 @@ import Foundation
 protocol TaskListInteractorInput: AnyObject {
     func fetchTasks()
     func toggleTaskCompletion(at index:Int)
+    func shareTask(with shareContent: String)
+    func taskDeletion(for task: TaskEntity, completion: @escaping (Result<Void, Error>) -> Void)
 }
 
 protocol TaskListInteractorOutput: AnyObject {
     func tasksFetched(_ tasks: [TaskEntity])
     func onError(_ error: Error)
+    func shareTask(with shareContent: String)
 }
 
 
 final class TaskListInteractorImpl: TaskListInteractorInput {
+    
     // MARK: - Properties
     weak var presenter: TaskListInteractorOutput?
+    var router: TaskListRouter?
     
     private var tasks: [TaskEntity] = []
     private let todosLoader: TodosLoading
     private let taskStore = StoreManager.shared.taskStore
+    
     
     // MARK: - Init
     init(todosLoader: TodosLoading) {
@@ -64,12 +70,28 @@ final class TaskListInteractorImpl: TaskListInteractorInput {
     }
     
     func toggleTaskCompletion(at index: Int) {
-        tasks[index].isCompleted.toggle()
+        let updatedTask = tasks[index].update(isCompleted: !tasks[index].isCompleted)
+        tasks[index] = updatedTask
+        
         taskStore.saveTask(entity: tasks[index])
         
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             self.presenter?.tasksFetched(self.tasks)
+        }
+    }
+    
+    func shareTask(with shareContent: String) {
+        presenter?.shareTask(with: shareContent)
+    }
+    
+    func taskDeletion(for task: TaskEntity, completion: @escaping (Result<Void, Error>) -> Void) {
+        taskStore.remove(task: task)
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.fetchTasks()
+            completion(.success(()))
         }
     }
 }
