@@ -35,6 +35,7 @@ final class TaskListViewController: UIViewController,
             }
         }
     }
+    private var filteredTasks: [TaskEntity] = []
     
     private var countOfTasks: Int = 0
     
@@ -64,7 +65,6 @@ final class TaskListViewController: UIViewController,
         configureConstraints()
         
         definesPresentationContext = true // обеспечивает представление UISearchController в границах этого VC
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -84,15 +84,6 @@ final class TaskListViewController: UIViewController,
     private func configureNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = "Задачи"
-        
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .ccBlack
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.ccWhite]
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.ccWhite]
-        
-        navigationController?.navigationBar.standardAppearance = appearance
-        navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
     
     private func configureSearchController() {
@@ -131,8 +122,8 @@ final class TaskListViewController: UIViewController,
     // MARK: - UISearchResultsUpdating
     
     func updateSearchResults(for searchController: UISearchController) {
-        guard let _ = searchController.searchBar.text?.lowercased() else { return }
-        print("4e-to iwem")
+        guard let inputText = searchController.searchBar.text else { return }
+        presenter?.filterTasks(with: inputText)
     }
     
     // MARK: - UITableViewDataSource

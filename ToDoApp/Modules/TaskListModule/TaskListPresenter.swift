@@ -12,16 +12,17 @@ protocol TaskListPresenterInput: AnyObject {
     func checkboxDidTapped(at index: Int)
     func didSelectMenuOption(_ option: ContextMenu, task: TaskEntity, view: UIViewController?)
     func createNewTaskButtonTapped(from view: UIViewController)
+    func filterTasks(with inputText: String)
 }
 
 final class TaskListPresenterImpl: TaskListPresenterInput,
                                    TaskListInteractorOutput {
-    
     //MARK: - Properties
     weak var view: TaskListView?
     var interactor: TaskListInteractorInput?
     var router: TaskListRouter?
     
+    private var filteredTasks: [TaskEntity] = []
     // MARK: - TaskListPresenterInput
     func viewWillAppear() {
         interactor?.fetchTasks()
@@ -53,8 +54,25 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
         }
     }
     
+    func createNewTaskButtonTapped(from view: UIViewController) {
+        router?.navigateToTaskDetail(for: nil, from: view)
+    }
+    
+    func filterTasks(with inputText: String) {
+        if inputText.isEmpty {
+            view?.showTasks(tasks: filteredTasks)
+        } else {
+            let filtered = filteredTasks.filter { task in
+                task.title.lowercased().contains(inputText.lowercased()) ||
+                task.description.lowercased().contains(inputText.lowercased())
+            }
+            view?.showTasks(tasks: filtered)
+        }
+    }
+    
     // MARK: - TaskListInteractorOutput
     func tasksFetched(_ tasks: [TaskEntity]) {
+        filteredTasks = tasks
         view?.showTasks(tasks: tasks)
     }
     
@@ -64,10 +82,5 @@ final class TaskListPresenterImpl: TaskListPresenterInput,
     
     func shareTask(with shareContent: String) {
         view?.showShareScreen(with: shareContent)
-    }
-    
-    func createNewTaskButtonTapped(from view: UIViewController) {
-        router?.navigateToTaskDetail(for: nil, from: view)
-        print(view)
     }
 }
